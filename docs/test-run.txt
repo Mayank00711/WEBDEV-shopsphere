@@ -1,0 +1,415 @@
+
+> shopsphere-backend@1.0.0 test
+> node --test --test-concurrency=1 "tests/**/*.test.js"
+
+TAP version 13
+# ◇ injected env (9) from .env
+# Subtest: Authentication
+    # Subtest: register succeeds, hashes password and returns tokens
+    ok 1 - register succeeds, hashes password and returns tokens
+      ---
+      duration_ms: 99.989819
+      type: 'test'
+      ...
+    # Subtest: duplicate email is rejected with 409
+    ok 2 - duplicate email is rejected with 409
+      ---
+      duration_ms: 5.660652
+      type: 'test'
+      ...
+    # Subtest: validation failure lists each invalid field
+    ok 3 - validation failure lists each invalid field
+      ---
+      duration_ms: 4.696521
+      type: 'test'
+      ...
+    # Subtest: public registration cannot create an admin
+    ok 4 - public registration cannot create an admin
+      ---
+      duration_ms: 3.221713
+      type: 'test'
+      ...
+    # Subtest: seller registration requires a store name
+    ok 5 - seller registration requires a store name
+      ---
+      duration_ms: 3.567969
+      type: 'test'
+      ...
+    # Subtest: wrong password returns 401 with a generic message
+    ok 6 - wrong password returns 401 with a generic message
+      ---
+      duration_ms: 59.444227
+      type: 'test'
+      ...
+    # Subtest: protected route without token returns 401
+    ok 7 - protected route without token returns 401
+      ---
+      duration_ms: 3.541486
+      type: 'test'
+      ...
+    # Subtest: tampered token returns 401
+    ok 8 - tampered token returns 401
+      ---
+      duration_ms: 3.084091
+      type: 'test'
+      ...
+    # Subtest: refresh rotates tokens and detects reuse of an old refresh token
+    ok 9 - refresh rotates tokens and detects reuse of an old refresh token
+      ---
+      duration_ms: 137.672287
+      type: 'test'
+      ...
+    # Subtest: logout invalidates the refresh token
+    ok 10 - logout invalidates the refresh token
+      ---
+      duration_ms: 123.897804
+      type: 'test'
+      ...
+    # Subtest: logout from all devices also invalidates the access token
+    ok 11 - logout from all devices also invalidates the access token
+      ---
+      duration_ms: 125.803293
+      type: 'test'
+      ...
+    1..11
+ok 1 - Authentication
+  ---
+  duration_ms: 672.761364
+  type: 'suite'
+  ...
+# Subtest: Users and RBAC
+    # Subtest: a user cannot escalate their own role via PATCH /me
+    ok 1 - a user cannot escalate their own role via PATCH /me
+      ---
+      duration_ms: 122.31391
+      type: 'test'
+      ...
+    # Subtest: customer cannot list users (403)
+    ok 2 - customer cannot list users (403)
+      ---
+      duration_ms: 116.781148
+      type: 'test'
+      ...
+    # Subtest: admin can list users with pagination and role filter
+    ok 3 - admin can list users with pagination and role filter
+      ---
+      duration_ms: 121.195043
+      type: 'test'
+      ...
+    # Subtest: deactivating a user blocks their existing token
+    ok 4 - deactivating a user blocks their existing token
+      ---
+      duration_ms: 227.387276
+      type: 'test'
+      ...
+    # Subtest: unknown user id returns 404, malformed id returns 400
+    ok 5 - unknown user id returns 404, malformed id returns 400
+      ---
+      duration_ms: 115.363853
+      type: 'test'
+      ...
+    1..5
+ok 2 - Users and RBAC
+  ---
+  duration_ms: 703.408238
+  type: 'suite'
+  ...
+# ◇ injected env (9) from .env
+# Subtest: Cart
+    # Subtest: cannot add more than available stock (422)
+    ok 1 - cannot add more than available stock (422)
+      ---
+      duration_ms: 12.036232
+      type: 'test'
+      ...
+    # Subtest: client-supplied prices are ignored; totals come from the server
+    ok 2 - client-supplied prices are ignored; totals come from the server
+      ---
+      duration_ms: 18.654751
+      type: 'test'
+      ...
+    # Subtest: sellers cannot use the cart (403)
+    ok 3 - sellers cannot use the cart (403)
+      ---
+      duration_ms: 4.403052
+      type: 'test'
+      ...
+    # Subtest: removing an item not in the cart returns 404
+    ok 4 - removing an item not in the cart returns 404
+      ---
+      duration_ms: 5.842952
+      type: 'test'
+      ...
+    1..4
+ok 3 - Cart
+  ---
+  duration_ms: 333.545554
+  type: 'suite'
+  ...
+# Subtest: Checkout, inventory and real-time events
+    # Subtest: socket connection without a token is rejected
+    ok 1 - socket connection without a token is rejected
+      ---
+      duration_ms: 11.527582
+      type: 'test'
+      ...
+# (node:3747) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+    # Subtest: checkout decrements stock, empties the cart and notifies the seller in real time
+    ok 2 - checkout decrements stock, empties the cart and notifies the seller in real time
+      ---
+      duration_ms: 35.914521
+      type: 'test'
+      ...
+    # Subtest: checkout with an empty cart returns 422
+    ok 3 - checkout with an empty cart returns 422
+      ---
+      duration_ms: 10.134581
+      type: 'test'
+      ...
+    # Subtest: simulated payment failure returns 402 and does not touch stock
+    ok 4 - simulated payment failure returns 402 and does not touch stock
+      ---
+      duration_ms: 23.221752
+      type: 'test'
+      ...
+# (node:3747) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (node:3747) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+    # Subtest: two customers racing for the last unit: exactly one succeeds, stock never negative
+    ok 5 - two customers racing for the last unit: exactly one succeeds, stock never negative
+      ---
+      duration_ms: 54.352097
+      type: 'test'
+      ...
+# (node:3747) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+    # Subtest: crossing the low-stock threshold emits stock:low to the seller
+    ok 6 - crossing the low-stock threshold emits stock:low to the seller
+      ---
+      duration_ms: 29.70801
+      type: 'test'
+      ...
+# (node:3747) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+    # Subtest: coupon is applied on the server; expired coupon is rejected
+    ok 7 - coupon is applied on the server; expired coupon is rejected
+      ---
+      duration_ms: 41.385206
+      type: 'test'
+      ...
+    1..7
+ok 4 - Checkout, inventory and real-time events
+  ---
+  duration_ms: 206.921949
+  type: 'suite'
+  ...
+# (node:3747) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# Subtest: Order access and status rules
+    # Subtest: a customer cannot see another customer's order (404)
+    ok 1 - a customer cannot see another customer's order (404)
+      ---
+      duration_ms: 8.164503
+      type: 'test'
+      ...
+    # Subtest: customers see only their own orders in the list
+    ok 2 - customers see only their own orders in the list
+      ---
+      duration_ms: 7.73145
+      type: 'test'
+      ...
+    # Subtest: invalid status transition returns 422
+    ok 3 - invalid status transition returns 422
+      ---
+      duration_ms: 5.315604
+      type: 'test'
+      ...
+    # Subtest: customer cannot mark an order shipped (403)
+    ok 4 - customer cannot mark an order shipped (403)
+      ---
+      duration_ms: 4.804539
+      type: 'test'
+      ...
+# (node:3747) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+    # Subtest: seller confirms the order and the customer is notified live
+    ok 5 - seller confirms the order and the customer is notified live
+      ---
+      duration_ms: 11.311978
+      type: 'test'
+      ...
+# (node:3747) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (node:3747) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+    # Subtest: customer cancellation restores stock and refunds the simulated payment
+    ok 6 - customer cancellation restores stock and refunds the simulated payment
+      ---
+      duration_ms: 13.364495
+      type: 'test'
+      ...
+    # Subtest: cancelling twice is a conflict (409)
+    ok 7 - cancelling twice is a conflict (409)
+      ---
+      duration_ms: 4.563601
+      type: 'test'
+      ...
+    # Subtest: notifications are persisted for offline users
+    ok 8 - notifications are persisted for offline users
+      ---
+      duration_ms: 108.827462
+      type: 'test'
+      ...
+    1..8
+ok 5 - Order access and status rules
+  ---
+  duration_ms: 186.246462
+  type: 'suite'
+  ...
+# Subtest: Reports (aggregation pipelines)
+    # Subtest: sales summary excludes cancelled orders
+    ok 1 - sales summary excludes cancelled orders
+      ---
+      duration_ms: 6.907955
+      type: 'test'
+      ...
+    # Subtest: top products are ranked by units sold
+    ok 2 - top products are ranked by units sold
+      ---
+      duration_ms: 6.578012
+      type: 'test'
+      ...
+    # Subtest: inventory summary and low-stock list
+    ok 3 - inventory summary and low-stock list
+      ---
+      duration_ms: 8.971171
+      type: 'test'
+      ...
+    # Subtest: customers cannot access reports (403)
+    ok 4 - customers cannot access reports (403)
+      ---
+      duration_ms: 3.395425
+      type: 'test'
+      ...
+    # Subtest: invalid date range is rejected (400)
+    ok 5 - invalid date range is rejected (400)
+      ---
+      duration_ms: 5.049659
+      type: 'test'
+      ...
+    1..5
+ok 6 - Reports (aggregation pipelines)
+  ---
+  duration_ms: 31.239749
+  type: 'suite'
+  ...
+# ◇ injected env (9) from .env
+# Subtest: Products
+    # Subtest: anyone can list products with pagination meta
+    ok 1 - anyone can list products with pagination meta
+      ---
+      duration_ms: 15.353953
+      type: 'test'
+      ...
+    # Subtest: text search uses the text index
+    ok 2 - text search uses the text index
+      ---
+      duration_ms: 6.906088
+      type: 'test'
+      ...
+    # Subtest: price filter validation: minPrice > maxPrice is rejected
+    ok 3 - price filter validation: minPrice > maxPrice is rejected
+      ---
+      duration_ms: 2.959209
+      type: 'test'
+      ...
+    # Subtest: seller creates a product (201) owned by them
+    ok 4 - seller creates a product (201) owned by them
+      ---
+      duration_ms: 8.193454
+      type: 'test'
+      ...
+    # Subtest: negative price fails validation (400)
+    ok 5 - negative price fails validation (400)
+      ---
+      duration_ms: 5.636604
+      type: 'test'
+      ...
+    # Subtest: unknown category is rejected (400)
+    ok 6 - unknown category is rejected (400)
+      ---
+      duration_ms: 4.712855
+      type: 'test'
+      ...
+    # Subtest: customer cannot create products (403)
+    ok 7 - customer cannot create products (403)
+      ---
+      duration_ms: 3.613538
+      type: 'test'
+      ...
+    # Subtest: no token cannot create products (401)
+    ok 8 - no token cannot create products (401)
+      ---
+      duration_ms: 5.586517
+      type: 'test'
+      ...
+    # Subtest: seller cannot edit another seller's product (403)
+    ok 9 - seller cannot edit another seller's product (403)
+      ---
+      duration_ms: 7.853888
+      type: 'test'
+      ...
+    # Subtest: admin can edit any product
+    ok 10 - admin can edit any product
+      ---
+      duration_ms: 10.110478
+      type: 'test'
+      ...
+    # Subtest: stock cannot be changed through the general update endpoint
+    ok 11 - stock cannot be changed through the general update endpoint
+      ---
+      duration_ms: 10.89309
+      type: 'test'
+      ...
+# (node:3775) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+    # Subtest: stock adjustment cannot make stock negative (422)
+    ok 12 - stock adjustment cannot make stock negative (422)
+      ---
+      duration_ms: 8.608793
+      type: 'test'
+      ...
+# (node:3775) [MONGOOSE] Warning: mongoose: the `new` option for `findOneAndUpdate()` and `findOneAndReplace()` is deprecated. Use `returnDocument: 'after'` instead.
+    # Subtest: restock is recorded in stock history
+    ok 13 - restock is recorded in stock history
+      ---
+      duration_ms: 16.719728
+      type: 'test'
+      ...
+    # Subtest: non-existent product returns 404
+    ok 14 - non-existent product returns 404
+      ---
+      duration_ms: 3.42395
+      type: 'test'
+      ...
+    # Subtest: admin-only category creation; duplicates return 409
+    ok 15 - admin-only category creation; duplicates return 409
+      ---
+      duration_ms: 11.985825
+      type: 'test'
+      ...
+    # Subtest: category in use cannot be deleted (409)
+    ok 16 - category in use cannot be deleted (409)
+      ---
+      duration_ms: 4.434204
+      type: 'test'
+      ...
+    1..16
+ok 7 - Products
+  ---
+  duration_ms: 415.076369
+  type: 'suite'
+  ...
+1..7
+# tests 56
+# suites 7
+# pass 56
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 3708.785723

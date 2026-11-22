@@ -1,0 +1,407 @@
+newman
+
+ShopSphere – E-Commerce & Inventory API
+
+❏ 0. Health
+↳ Health check
+  GET http://localhost:5000/api/health [200 OK, 780B, 17ms]
+  ✓  Status is 200
+  ✓  db connected
+
+❏ 1. Auth
+↳ Login as Admin
+  POST http://localhost:5000/api/auth/login [200 OK, 1.53kB, 59ms]
+  ✓  Status is 200
+  ✓  returns access and refresh tokens
+  ✓  password is never returned
+
+↳ Login as Seller (TechNova)
+  POST http://localhost:5000/api/auth/login [200 OK, 1.56kB, 65ms]
+  ✓  Status is 200
+  ✓  returns access and refresh tokens
+  ✓  password is never returned
+
+↳ Login as Seller (Urban Loom)
+  POST http://localhost:5000/api/auth/login [200 OK, 1.56kB, 62ms]
+  ✓  Status is 200
+  ✓  returns access and refresh tokens
+  ✓  password is never returned
+
+↳ Login as Customer (Aarav)
+  POST http://localhost:5000/api/auth/login [200 OK, 1.66kB, 59ms]
+  ✓  Status is 200
+  ✓  returns access and refresh tokens
+  ✓  password is never returned
+
+↳ Login as Customer (Priya)
+  POST http://localhost:5000/api/auth/login [200 OK, 1.67kB, 57ms]
+  ✓  Status is 200
+  ✓  returns access and refresh tokens
+  ✓  password is never returned
+
+↳ Register new customer
+  POST http://localhost:5000/api/auth/register [201 Created, 1.57kB, 66ms]
+  ✓  Status is 201
+  ✓  role defaults to customer
+
+↳ Register – duplicate email (409)
+  POST http://localhost:5000/api/auth/register [409 Conflict, 906B, 10ms]
+  ✓  Status is 409
+  ✓  success is false
+
+↳ Register – validation failure (400)
+  POST http://localhost:5000/api/auth/register [400 Bad Request, 1.26kB, 5ms]
+  ✓  Status is 400
+  ✓  lists invalid fields
+
+↳ Register – cannot self-register as admin (400)
+  POST http://localhost:5000/api/auth/register [400 Bad Request, 982B, 3ms]
+  ✓  Status is 400
+
+↳ Login – wrong password (401)
+  POST http://localhost:5000/api/auth/login [401 Unauthorized, 894B, 56ms]
+  ✓  Status is 401
+  ✓  success is false
+
+↳ Refresh access token (rotation)
+  POST http://localhost:5000/api/auth/refresh [200 OK, 1.23kB, 7ms]
+  ✓  Status is 200
+  ✓  new refresh token issued
+
+↳ Refresh – invalid token (401)
+  POST http://localhost:5000/api/auth/refresh [401 Unauthorized, 805B, 3ms]
+  ✓  Status is 401
+
+❏ 2. Users
+↳ Get my profile
+  GET http://localhost:5000/api/users/me [200 OK, 1.05kB, 3ms]
+  ✓  Status is 200
+  ✓  is Aarav
+
+↳ Get my profile – no token (401)
+  GET http://localhost:5000/api/users/me [401 Unauthorized, 793B, 1ms]
+  ✓  Status is 401
+
+↳ Update my profile (role field is ignored)
+  PATCH http://localhost:5000/api/users/me [200 OK, 1.06kB, 7ms]
+  ✓  Status is 200
+  ✓  role unchanged
+
+↳ Admin – list customers (paginated)
+  GET http://localhost:5000/api/users?role=customer&page=1&limit=5 [200 OK, 2.01kB, 5ms]
+  ✓  Status is 200
+  ✓  has pagination meta
+
+↳ Customer – list users (403)
+  GET http://localhost:5000/api/users [403 Forbidden, 824B, 4ms]
+  ✓  Status is 403
+
+↳ Admin – get user by id
+  GET http://localhost:5000/api/users/6af75e4b1c3a5ae8b3f4f662 [200 OK, 1.06kB, 5ms]
+  ✓  Status is 200
+
+↳ Admin – user not found (404)
+  GET http://localhost:5000/api/users/64b7f0000000000000000000 [404 Not Found, 783B, 5ms]
+  ✓  Status is 404
+
+↳ Admin – malformed id (400)
+  GET http://localhost:5000/api/users/123 [400 Bad Request, 869B, 3ms]
+  ✓  Status is 400
+
+❏ 3. Categories
+↳ List categories (public)
+  GET http://localhost:5000/api/categories [200 OK, 2.14kB, 5ms]
+  ✓  Status is 200
+  ✓  includes product counts
+
+↳ Admin – create category
+  POST http://localhost:5000/api/categories [201 Created, 964B, 5ms]
+  ✓  Status is 201
+
+↳ Admin – duplicate category (409)
+  POST http://localhost:5000/api/categories [409 Conflict, 864B, 5ms]
+  ✓  Status is 409
+
+↳ Seller – create category (403)
+  POST http://localhost:5000/api/categories [403 Forbidden, 822B, 4ms]
+  ✓  Status is 403
+
+↳ Admin – update category
+  PATCH http://localhost:5000/api/categories/6af75e4cee0afdafac4172bb [200 OK, 952B, 7ms]
+  ✓  Status is 200
+
+↳ Admin – delete category in use (409)
+  DELETE http://localhost:5000/api/categories/6af75e4b1c3a5ae8b3f4f668 [409 Conflict, 832B, 6ms]
+  ✓  Status is 409
+
+↳ Admin – delete category
+  DELETE http://localhost:5000/api/categories/6af75e4cee0afdafac4172bb [200 OK, 738B, 7ms]
+  ✓  Status is 200
+
+❏ 4. Products & Inventory
+↳ List products (page 1, 6 per page, cheapest first)
+  GET http://localhost:5000/api/products?page=1&limit=6&sort=price [200 OK, 3.96kB, 7ms]
+  ✓  Status is 200
+  ✓  sorted by price
+
+↳ Search products (text index)
+  GET http://localhost:5000/api/products?search=headphones [200 OK, 1.36kB, 5ms]
+  ✓  Status is 200
+  ✓  found headphones
+
+↳ Filter by seller, in stock
+  GET http://localhost:5000/api/products?seller=6af75e4b1c3a5ae8b3f4f65f&inStock=true&minPrice=500&maxPrice=10000&sort=-price [200 OK, 7.31kB, 8ms]
+  ✓  Status is 200
+  ✓  all from TechNova
+
+↳ Filter – invalid price range (400)
+  GET http://localhost:5000/api/products?minPrice=900&maxPrice=100 [400 Bad Request, 812B, 2ms]
+  ✓  Status is 400
+
+↳ Get product by id
+  GET http://localhost:5000/api/products/6af75e4b1c3a5ae8b3f4f66a [200 OK, 1.3kB, 4ms]
+  ✓  Status is 200
+
+↳ Get product – not found (404)
+  GET http://localhost:5000/api/products/64b7f0000000000000000000 [404 Not Found, 786B, 3ms]
+  ✓  Status is 404
+
+↳ Seller – create product
+  POST http://localhost:5000/api/products [201 Created, 1.11kB, 8ms]
+  ✓  Status is 201
+
+↳ Seller – create product, validation failure (400)
+  POST http://localhost:5000/api/products [400 Bad Request, 1.13kB, 3ms]
+  ✓  Status is 400
+
+↳ Customer – create product (403)
+  POST http://localhost:5000/api/products [403 Forbidden, 824B, 3ms]
+  ✓  Status is 403
+
+↳ No token – create product (401)
+  POST http://localhost:5000/api/products [401 Unauthorized, 793B, 1ms]
+  ✓  Status is 401
+
+↳ Seller – update own product
+  PATCH http://localhost:5000/api/products/6af75e4dee0afdafac4172bd [200 OK, 1.1kB, 6ms]
+  ✓  Status is 200
+
+↳ Other seller – update someone else's product (403)
+  PATCH http://localhost:5000/api/products/6af75e4dee0afdafac4172bd [403 Forbidden, 807B, 4ms]
+  ✓  Status is 403
+
+↳ Seller – restock product
+  PATCH http://localhost:5000/api/products/6af75e4dee0afdafac4172bd/stock [200 OK, 1.1kB, 7ms]
+  ✓  Status is 200
+  ✓  stock is 16
+
+↳ Seller – remove more stock than available (422)
+  PATCH http://localhost:5000/api/products/6af75e4dee0afdafac4172bd/stock [422 Unprocessable Entity, 823B, 5ms]
+  ✓  Status is 422
+
+↳ Seller – stock history (audit trail)
+  GET http://localhost:5000/api/products/6af75e4dee0afdafac4172bd/stock-history [200 OK, 1.19kB, 6ms]
+  ✓  Status is 200
+
+↳ Seller – my inventory
+  GET http://localhost:5000/api/products/mine?limit=50 [200 OK, 9.9kB, 8ms]
+  ✓  Status is 200
+
+↳ Seller – delete product
+  DELETE http://localhost:5000/api/products/6af75e4dee0afdafac4172bd [200 OK, 737B, 5ms]
+  ✓  Status is 200
+
+❏ 5. Cart
+↳ Clear cart
+  DELETE http://localhost:5000/api/cart [200 OK, 880B, 7ms]
+  ✓  Status is 200
+
+↳ Add item to cart (client price ignored)
+  POST http://localhost:5000/api/cart/items [200 OK, 1.22kB, 12ms]
+  ✓  Status is 200
+  ✓  server price used
+
+↳ Add item – quantity above stock (422)
+  POST http://localhost:5000/api/cart/items [422 Unprocessable Entity, 923B, 6ms]
+  ✓  Status is 422
+
+↳ Add item – invalid product id (400)
+  POST http://localhost:5000/api/cart/items [400 Bad Request, 881B, 3ms]
+  ✓  Status is 400
+
+↳ Update quantity
+  PATCH http://localhost:5000/api/cart/items/6af75e4b1c3a5ae8b3f4f66a [200 OK, 1.22kB, 11ms]
+  ✓  Status is 200
+  ✓  qty 2
+
+↳ Get cart with totals
+  GET http://localhost:5000/api/cart [200 OK, 1.21kB, 7ms]
+  ✓  Status is 200
+  ✓  total = subtotal + shipping
+
+↳ Seller – access cart (403)
+  GET http://localhost:5000/api/cart [403 Forbidden, 822B, 3ms]
+  ✓  Status is 403
+
+❏ 6. Coupons
+↳ Apply WELCOME10 to cart
+  POST http://localhost:5000/api/coupons/apply [200 OK, 841B, 7ms]
+  ✓  Status is 200
+
+↳ Apply expired coupon (422)
+  POST http://localhost:5000/api/coupons/apply [422 Unprocessable Entity, 798B, 8ms]
+  ✓  Status is 422
+
+↳ Admin – list coupons
+  GET http://localhost:5000/api/coupons [200 OK, 1.5kB, 5ms]
+  ✓  Status is 200
+
+↳ Customer – list coupons (403)
+  GET http://localhost:5000/api/coupons [403 Forbidden, 824B, 3ms]
+  ✓  Status is 403
+
+❏ 7. Orders
+↳ Checkout (simulated payment)
+  POST http://localhost:5000/api/orders [201 Created, 1.67kB, 14ms]
+  ✓  Status is 201
+  ✓  payment is marked simulated
+  ✓  total computed on server
+
+↳ Stock was decremented atomically
+  GET http://localhost:5000/api/products/6af75e4b1c3a5ae8b3f4f66a [200 OK, 1.3kB, 6ms]
+  ✓  Status is 200
+  ✓  stock reduced by 2
+
+↳ Checkout – empty cart (422)
+  POST http://localhost:5000/api/orders [422 Unprocessable Entity, 798B, 5ms]
+  ✓  Status is 422
+
+↳ Checkout – missing address (400)
+  POST http://localhost:5000/api/orders [400 Bad Request, 886B, 4ms]
+  ✓  Status is 400
+
+↳ Customer – my orders
+  GET http://localhost:5000/api/orders?page=1&limit=5 [200 OK, 6.79kB, 8ms]
+  ✓  Status is 200
+
+↳ Customer – get my order
+  GET http://localhost:5000/api/orders/6af75e4dee0afdafac4172c0 [200 OK, 1.79kB, 6ms]
+  ✓  Status is 200
+
+↳ Other customer – get someone else's order (404)
+  GET http://localhost:5000/api/orders/6af75e4dee0afdafac4172c0 [404 Not Found, 784B, 8ms]
+  ✓  Status is 404
+
+↳ Seller – invalid transition pending → delivered (422)
+  PATCH http://localhost:5000/api/orders/6af75e4dee0afdafac4172c0/status [422 Unprocessable Entity, 878B, 6ms]
+  ✓  Status is 422
+
+↳ Customer – mark shipped (403)
+  PATCH http://localhost:5000/api/orders/6af75e4dee0afdafac4172c0/status [403 Forbidden, 808B, 6ms]
+  ✓  Status is 403
+
+↳ Seller – confirm order
+  PATCH http://localhost:5000/api/orders/6af75e4dee0afdafac4172c0/status [200 OK, 1.77kB, 9ms]
+  ✓  Status is 200
+
+↳ Other seller – update order not theirs (404)
+  PATCH http://localhost:5000/api/orders/6af75e4dee0afdafac4172c0/status [404 Not Found, 784B, 6ms]
+  ✓  Status is 404
+
+↳ Customer – cancel confirmed order (stock restored)
+  PATCH http://localhost:5000/api/orders/6af75e4dee0afdafac4172c0/status [200 OK, 1.89kB, 12ms]
+  ✓  Status is 200
+  ✓  refunded
+
+↳ Stock restored after cancellation
+  GET http://localhost:5000/api/products/6af75e4b1c3a5ae8b3f4f66a [200 OK, 1.3kB, 6ms]
+  ✓  stock back to original
+
+↳ Customer – cancel again (409)
+  PATCH http://localhost:5000/api/orders/6af75e4dee0afdafac4172c0/status [409 Conflict, 795B, 6ms]
+  ✓  Status is 409
+
+↳ Seller – orders containing my products
+  GET http://localhost:5000/api/orders?status=delivered [200 OK, 13.57kB, 10ms]
+  ✓  Status is 200
+
+↳ Admin – all orders
+  GET http://localhost:5000/api/orders?limit=10 [200 OK, 12.57kB, 10ms]
+  ✓  Status is 200
+
+❏ 8. Reports (Aggregation)
+↳ Admin – sales summary by month
+  GET http://localhost:5000/api/reports/sales?groupBy=month [200 OK, 1.08kB, 6ms]
+  ✓  Status is 200
+  ✓  has totals
+
+↳ Seller – daily sales (own products only)
+  GET http://localhost:5000/api/reports/sales?groupBy=day [200 OK, 2.47kB, 5ms]
+  ✓  Status is 200
+
+↳ Top 5 best-selling products
+  GET http://localhost:5000/api/reports/top-products?limit=5 [200 OK, 1.51kB, 5ms]
+  ✓  Status is 200
+
+↳ Category-wise sales
+  GET http://localhost:5000/api/reports/category-sales [200 OK, 1.29kB, 7ms]
+  ✓  Status is 200
+
+↳ Inventory summary
+  GET http://localhost:5000/api/reports/inventory [200 OK, 1.71kB, 6ms]
+  ✓  Status is 200
+
+↳ Low-stock products
+  GET http://localhost:5000/api/reports/low-stock [200 OK, 1.23kB, 12ms]
+  ✓  Status is 200
+  ✓  all at/below threshold
+
+↳ Report – invalid date range (400)
+  GET http://localhost:5000/api/reports/sales?from=2026-06-01&to=2026-01-01 [400 Bad Request, 891B, 5ms]
+  ✓  Status is 400
+
+↳ Customer – reports (403)
+  GET http://localhost:5000/api/reports/sales [403 Forbidden, 824B, 4ms]
+  ✓  Status is 403
+
+❏ 9. Notifications
+↳ Customer – notifications
+  GET http://localhost:5000/api/notifications [200 OK, 1.86kB, 7ms]
+  ✓  Status is 200
+
+↳ Mark all read
+  PATCH http://localhost:5000/api/notifications/read-all [200 OK, 763B, 6ms]
+  ✓  Status is 200
+
+❏ 10. Logout
+↳ Logout
+  POST http://localhost:5000/api/auth/logout [200 OK, 732B, 5ms]
+  ✓  Status is 200
+
+↳ Refresh after logout (401)
+  POST http://localhost:5000/api/auth/refresh [401 Unauthorized, 833B, 5ms]
+  ✓  Status is 401
+
+↳ Unknown route (404)
+  GET http://localhost:5000/api/does-not-exist [404 Not Found, 810B, 2ms]
+  ✓  Status is 404
+
+┌─────────────────────────┬──────────────────┬──────────────────┐
+│                         │         executed │           failed │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              iterations │                1 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│                requests │               85 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│            test-scripts │               85 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│      prerequest-scripts │                2 │                0 │
+├─────────────────────────┼──────────────────┼──────────────────┤
+│              assertions │              118 │                0 │
+├─────────────────────────┴──────────────────┴──────────────────┤
+│ total run duration: 1929ms                                    │
+├───────────────────────────────────────────────────────────────┤
+│ total data received: 83.37kB (approx)                         │
+├───────────────────────────────────────────────────────────────┤
+│ average response time: 10ms [min: 1ms, max: 66ms, s.d.: 15ms] │
+└───────────────────────────────────────────────────────────────┘
